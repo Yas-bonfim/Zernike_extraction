@@ -297,13 +297,28 @@ residual = (
     - phase_reconstructed[pupil_mask]
 )
 
+# Remove valores infinitos/NaN
 residual = residual[np.isfinite(residual)]
 
-rms = np.sqrt(
-    np.mean(residual**2)
-)
-
+# Cálculo do RMS 
+rms = np.sqrt(np.mean(residual**2))
 print(f"\nRMS residual: {rms:.8f} rad")
+
+# Cálculo da Variância Geral do Erro de Fase
+# A variância mede a dispersão dos erros em torno da média
+variancia_residual = np.var(residual)
+print(f"Variância do erro residual: {variancia_residual:.8e} rad²")
+
+# Conversão para Ruído de Excesso
+# Em sistemas ópticos, a variância da fase residual representa diretamente 
+# a potência do ruído de excesso (excess noise power) não corrigido.
+ruido_excesso = variancia_residual 
+print(f"Ruído de excesso (potência): {ruido_excesso:.8e} rad²")
+
+# Se precisar do ruído de excesso em decibéis (dB) em relação a 1 rad²
+if ruido_excesso > 0:
+    ruido_excesso_db = 10 * np.log10(ruido_excesso)
+    print(f"Ruído de excesso em dB: {ruido_excesso_db:.2f} dB")
 
 
 
